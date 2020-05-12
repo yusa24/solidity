@@ -253,6 +253,7 @@ wasm::Expression WasmCodeTransform::operator()(ForLoop const& _for)
 	m_breakContinueLabelNames.push({breakLabel, continueLabel});
 
 	yul::Type conditionType = m_typeInfo.typeOf(*_for.condition);
+	yulAssert(conditionType == "i32"_yulstring || conditionType == "i64"_yulstring, "");
 	YulString eqz_instruction = YulString(conditionType.str() + ".eqz");
 	yulAssert(WasmDialect::instance().builtin(eqz_instruction), "");
 
@@ -275,11 +276,13 @@ wasm::Expression WasmCodeTransform::operator()(ForLoop const& _for)
 
 wasm::Expression WasmCodeTransform::operator()(Break const&)
 {
+	yulAssert(m_breakContinueLabelNames.size() > 0, "");
 	return wasm::Branch{wasm::Label{m_breakContinueLabelNames.top().first}};
 }
 
 wasm::Expression WasmCodeTransform::operator()(Continue const&)
 {
+	yulAssert(m_breakContinueLabelNames.size() > 0, "");
 	return wasm::Branch{wasm::Label{m_breakContinueLabelNames.top().second}};
 }
 
@@ -333,6 +336,7 @@ wasm::FunctionDefinition WasmCodeTransform::translateFunction(yul::FunctionDefin
 		fun.parameters.push_back({param.name.str(), translatedType(param.type)});
 	for (auto const& retParam: _fun.returnVariables)
 		fun.locals.emplace_back(wasm::VariableDeclaration{retParam.name.str(), translatedType(retParam.type)});
+	yulAssert(_fun.returnVariables.size() <= 1, "Only up to 1 return variable supported.");
 	if (!_fun.returnVariables.empty())
 		fun.returnType = translatedType(_fun.returnVariables[0].type);
 

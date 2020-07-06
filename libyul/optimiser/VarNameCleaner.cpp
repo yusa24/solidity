@@ -16,8 +16,8 @@
 */
 // SPDX-License-Identifier: GPL-3.0
 
-#include <liblangutil/Token.h>
 #include <libyul/optimiser/VarNameCleaner.h>
+#include <libyul/optimiser/OptimizerUtilities.h>
 #include <libyul/AsmData.h>
 #include <libyul/Dialect.h>
 
@@ -29,7 +29,6 @@
 #include <regex>
 
 using namespace std;
-using namespace solidity::langutil;
 using namespace solidity::yul;
 
 VarNameCleaner::VarNameCleaner(
@@ -112,11 +111,7 @@ YulString VarNameCleaner::findCleanName(YulString const& _name) const
 
 bool VarNameCleaner::isUsedName(YulString const& _name) const
 {
-	if (_name.empty() || m_dialect.builtin(_name) || m_usedNames.count(_name))
-		return true;
-	if (TokenTraits::keywordByName(_name.str()) != Token::Identifier)
-		return true;
-	return false;
+	return isRestrictedIdentifier(m_dialect, _name) || m_usedNames.count(_name);
 }
 
 YulString VarNameCleaner::stripSuffix(YulString const& _name) const

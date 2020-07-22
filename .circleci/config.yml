@@ -588,6 +588,25 @@ jobs:
       - store_test_results: *store_test_results
       - store_artifacts: *artifacts_test_results
 
+  test_osx:
+    macos:
+      xcode: "11.0.0"
+    environment:
+      EVM: constantinople
+      OPTIMIZE: 0
+      TERM: xterm
+    parallelism: 6
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - dependencies-osx-{{ .Branch }}-{{ checksum ".circleci/config.yml" }}-{{ checksum ".circleci/osx_install_dependencies.sh" }}
+      - attach_workspace:
+          at: build
+      - run: *run_soltest_all
+      - store_test_results: *store_test_results
+      - store_artifacts: *artifacts_test_results
+
   t_osx_cli:
     macos:
       xcode: "11.0.0"
@@ -878,6 +897,7 @@ workflows:
       - b_osx: *workflow_trigger_on_tags
       - t_osx_cli: *workflow_osx
       - t_osx_soltest: *workflow_osx
+      - test_osx: *workflow_osx
 
       # Ubuntu build and tests
       - b_ubu: *workflow_trigger_on_tags

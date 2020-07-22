@@ -125,6 +125,13 @@ public:
 	/// signature: (x, y) -> diff
 	std::string overflowCheckedIntSubFunction(IntegerType const& _type);
 
+	/// signature: (x, y) -> power
+	std::string overflowCheckedIntExpFunction(IntegerType const& _type, IntegerType const& _exponentType);
+
+	/// Helper function that optimizes cases of small bases
+	/// signature: (base, exp, maxValue) -> power, invalid
+	std::string smallBaseIntExpFunction();
+
 	/// @returns the name of a function that fetches the length of the given
 	/// array
 	/// signature: (array) -> length

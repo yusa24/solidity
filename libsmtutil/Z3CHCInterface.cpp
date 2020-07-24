@@ -69,6 +69,7 @@ pair<CheckResult, CHCSolverInterface::CexGraph> Z3CHCInterface::query(Expression
 {
 	CheckResult result;
 	CHCSolverInterface::CexGraph cex;
+	//cout << "\nQUERY:\n" << m_solver << endl;
 	try
 	{
 		z3::expr z3Expr = m_z3Interface->toZ3Expr(_expr);
@@ -77,6 +78,7 @@ pair<CheckResult, CHCSolverInterface::CexGraph> Z3CHCInterface::query(Expression
 		case z3::check_result::sat:
 		{
 			result = CheckResult::SATISFIABLE;
+			cout << "\nQUERY IS SAT\n";
 			auto proof = m_solver.get_answer();
 			auto cex = cexGraph(proof);
 			return {result, cex};
@@ -84,20 +86,23 @@ pair<CheckResult, CHCSolverInterface::CexGraph> Z3CHCInterface::query(Expression
 		case z3::check_result::unsat:
 		{
 			result = CheckResult::UNSATISFIABLE;
+			cout << "\nQUERY IS UNSAT\n";
 			// TODO retrieve invariants.
 			break;
 		}
 		case z3::check_result::unknown:
 		{
 			result = CheckResult::UNKNOWN;
+			cout << "\nQUERY IS UNKNOWN: " << m_solver.reason_unknown() << "\n";
 			break;
 		}
 		}
 		// TODO retrieve model / invariants
 	}
-	catch (z3::exception const&)
+	catch (z3::exception const& _err)
 	{
 		result = CheckResult::ERROR;
+		cout << "\nQUERY ERROR: " << _err.msg() << "\n";
 		cex = {};
 	}
 
@@ -116,6 +121,8 @@ void Z3CHCInterface::setSpacerOptions(bool _preProcessing)
 	p.set("fp.spacer.mbqi", false);
 	// Ground pobs by using values from a model.
 	p.set("fp.spacer.ground_pobs", false);
+
+	//p.set("fp.spacer.trace_file", "spacer_trace.txt");
 
 	// Spacer optimization should be
 	// - enabled for better solving (default)

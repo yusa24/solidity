@@ -36,6 +36,7 @@
 
 #include <vector>
 #include <functional>
+#include <optional>
 
 namespace solidity::evmasm
 {
@@ -679,16 +680,17 @@ std::vector<SimplificationRule<Pattern>> simplificationRuleListPart9(
 template<class Pattern>
 std::vector<SimplificationRule<Pattern>> evmRuleList(
 	langutil::EVMVersion _evmVersion,
+	Pattern A,
 	Pattern,
 	Pattern,
 	Pattern,
-	Pattern,
-	Pattern,
+	Pattern X,
 	Pattern,
 	Pattern
 )
 {
 	using Builtins = typename Pattern::Builtins;
+	using Word = typename Pattern::Word;
 	std::vector<SimplificationRule<Pattern>> rules;
 
 	if (_evmVersion.hasSelfBalance())
@@ -696,6 +698,28 @@ std::vector<SimplificationRule<Pattern>> evmRuleList(
 			Builtins::BALANCE(Instruction::ADDRESS),
 			[]() -> Pattern { return Instruction::SELFBALANCE; }, false
 		});
+
+	// @returns i if _x == 2**i
+	auto binaryLogarithm = [](Word const& _x) -> std::optional<Word> {
+		for (size_t i = 0; i < Pattern::WordSize; i++)
+			if (_x == (Word(1) << i))
+				return Word(i);
+		return {};
+	};
+	if (_evmVersion.hasBitwiseShifting())
+	{
+		rules.emplace_back(
+			Builtins::EXP(2, X),
+			[=]() -> Pattern { return Builtins::SHL(X, 1); },
+			false
+		);
+		rules.emplace_back(
+			Builtins::EXP(A, X),
+			[=]() -> Pattern { return Builtins::SHL(Builtins::MUL(X, *binaryLogarithm(A.d())), 1); },
+			false,
+			[=]() { return binaryLogarithm(A.d()).has_value() && *binaryLogarithm(A.d()) > 1; }
+		);
+	}
 
 	return rules;
 }

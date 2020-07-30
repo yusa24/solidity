@@ -175,8 +175,8 @@ Statement Parser::parseStatement()
 
 			auto const& identifier = std::get<Identifier>(elementary);
 
-			if (m_dialect.builtin(identifier.name))
-				fatalParserError(6272_error, "Cannot assign to builtin function \"" + identifier.name.str() + "\".");
+//			if (m_dialect.builtin(identifier.name))
+//				fatalParserError(6272_error, "Cannot assign to builtin function \"" + identifier.name.str() + "\".");
 
 			assignment.variableNames.emplace_back(identifier);
 
@@ -488,8 +488,10 @@ YulString Parser::expectAsmIdentifier()
 		break;
 	}
 
-	if (m_dialect.builtin(name))
-		fatalParserError(5568_error, "Cannot use builtin function name \"" + name.str() + "\" as identifier name.");
+	if (m_dialect.reservedIdentifier(name))
+		fatalParserError(5568_error, "Cannot use reserved name \"" + name.str() + "\" as identifier name.");
+//	if (m_dialect.builtin(name))
+//		fatalParserError(5568_error, "Cannot use builtin function name \"" + name.str() + "\" as identifier name.");
 	advance();
 	return name;
 }

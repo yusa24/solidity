@@ -133,7 +133,7 @@ Statement Parser::parseStatement()
 	// Options left:
 	// Expression/FunctionCall
 	// Assignment
-	ElementaryOperation elementary(parseElementaryOperation());
+	ElementaryOperation elementary(parseLiteralOrIdentifier());
 
 	// Workaround because there is no leave keyword in the scanner.
 	if (holds_alternative<Identifier>(elementary) && std::get<Identifier>(elementary).name.str() == "leave")
@@ -184,7 +184,7 @@ Statement Parser::parseStatement()
 
 			expectToken(Token::Comma);
 
-			elementary = parseElementaryOperation();
+			elementary = parseLiteralOrIdentifier();
 		}
 
 		expectToken(Token::AssemblyAssign);
@@ -212,7 +212,7 @@ Case Parser::parseCase()
 	else if (currentToken() == Token::Case)
 	{
 		advance();
-		ElementaryOperation literal = parseElementaryOperation();
+		ElementaryOperation literal = parseLiteralOrIdentifier();
 		if (!holds_alternative<Literal>(literal))
 			fatalParserError(4805_error, "Literal expected.");
 		_case.value = make_unique<Literal>(std::get<Literal>(std::move(literal)));
@@ -251,7 +251,7 @@ Expression Parser::parseExpression()
 {
 	RecursionGuard recursionGuard(*this);
 
-	ElementaryOperation operation = parseElementaryOperation();
+	ElementaryOperation operation = parseLiteralOrIdentifier();
 	if (holds_alternative<Identifier>(operation))
 	{
 		if (currentToken() == Token::LParen)
@@ -265,7 +265,7 @@ Expression Parser::parseExpression()
 	}
 }
 
-Parser::ElementaryOperation Parser::parseElementaryOperation()
+Parser::ElementaryOperation Parser::parseLiteralOrIdentifier()
 {
 	RecursionGuard recursionGuard(*this);
 	ElementaryOperation ret;

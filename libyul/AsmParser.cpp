@@ -126,16 +126,6 @@ Statement Parser::parseStatement()
 		m_scanner->next();
 		return stmt;
 	}
-	case Token::Identifier:
-		if (currentLiteral() == "leave")
-		{
-			Statement stmt{createWithLocation<Leave>()};
-			if (!m_insideFunction)
-				m_errorReporter.syntaxError(8149_error, currentLocation(), "Keyword \"leave\" can only be used inside a function.");
-			m_scanner->next();
-			return stmt;
-		}
-		break;
 	default:
 		break;
 	}
@@ -144,6 +134,15 @@ Statement Parser::parseStatement()
 	// Expression/FunctionCall
 	// Assignment
 	ElementaryOperation elementary(parseElementaryOperation());
+
+	// Workaround because there is no leave keyword in the scanner.
+	if (holds_alternative<Identifier>(elementary) && std::get<Identifier>(elementary).name.str() == "leave")
+	{
+		Statement stmt{createWithLocation<Leave>()};
+		if (!m_insideFunction)
+			m_errorReporter.syntaxError(8149_error, currentLocation(), "Keyword \"leave\" can only be used inside a function.");
+		return stmt;
+	}
 
 	switch (currentToken())
 	{
@@ -199,6 +198,9 @@ Statement Parser::parseStatement()
 		fatalParserError(6913_error, "Call or assignment expected.");
 		break;
 	}
+
+	yulAssert(false, "Should not be reached.");
+	return {};
 }
 
 Case Parser::parseCase()

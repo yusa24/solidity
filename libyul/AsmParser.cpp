@@ -139,10 +139,10 @@ Statement Parser::parseStatement()
 	default:
 		break;
 	}
+
 	// Options left:
-	// Simple instruction (might turn into functional),
-	// literal,
-	// identifier (might turn into label or functional assignment)
+	// Expression/FunctionCall
+	// Assignment
 	ElementaryOperation elementary(parseElementaryOperation());
 
 	switch (currentToken())
@@ -198,22 +198,6 @@ Statement Parser::parseStatement()
 	default:
 		fatalParserError(6913_error, "Call or assignment expected.");
 		break;
-	}
-
-	if (holds_alternative<Identifier>(elementary))
-	{
-		Identifier& identifier = std::get<Identifier>(elementary);
-		return ExpressionStatement{identifier.location, { move(identifier) }};
-	}
-	else if (holds_alternative<Literal>(elementary))
-	{
-		Expression expr = std::get<Literal>(elementary);
-		return ExpressionStatement{locationOf(expr), expr};
-	}
-	else
-	{
-		yulAssert(false, "Invalid elementary operation.");
-		return {};
 	}
 }
 

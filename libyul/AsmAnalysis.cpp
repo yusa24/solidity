@@ -561,6 +561,14 @@ void AsmAnalyzer::expectValidIdentifier(YulString _identifier, SourceLocation co
 			"\"" + _identifier.str() + "\" is not a valid identifier (contains consecutive dots)."
 		);
 
+	if (EVMDialect::strictAssemblyForEVM(EVMVersion()).reservedIdentifier(_identifier))
+	{
+		m_errorReporter.syntaxError(
+			5017_error,
+			_location,
+			"The identifier \"" + _identifier.str() + "\" can not be used."
+		);
+	}
 }
 
 void AsmAnalyzer::expectValidType(YulString _type, SourceLocation const& _location)

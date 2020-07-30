@@ -1,7 +1,7 @@
 ### 0.7.1 (unreleased)
 
 Language Features:
-
+ * Yul: Disallow the use of reserved identifiers, such as EVM instructions, even if they are not available in the given dialect / EVM version.
 
 Compiler Features:
 

@@ -163,7 +163,10 @@ void ImmutableValidator::analyseVariableReference(VariableDeclaration const& _va
 	if (!_variableReference.isStateVariable() || !_variableReference.immutable())
 		return;
 
-	if (_expression.annotation().willBeWrittenTo && _expression.annotation().lValueOfOrdinaryAssignment)
+	// If this is not an ordinary assignment, we write and read at the same time.
+	bool write = _expression.annotation().willBeWrittenTo;
+	bool read = !_expression.annotation().willBeWrittenTo || !_expression.annotation().lValueOfOrdinaryAssignment;
+	if (write)
 	{
 		if (!m_currentConstructor)
 			m_errorReporter.typeError(
@@ -189,15 +192,15 @@ void ImmutableValidator::analyseVariableReference(VariableDeclaration const& _va
 				_expression.location(),
 				"Immutable variables must be initialized unconditionally, not in an if statement."
 			);
-
-		if (!m_initializedStateVariables.emplace(&_variableReference).second)
+		if (m_initializedStateVariables.count(&_variableReference))
 			m_errorReporter.typeError(
 				1574_error,
 				_expression.location(),
 				"Immutable state variable already initialized."
 			);
+		m_initializedStateVariables.emplace(&_variableReference);
 	}
-	else if (m_inConstructionContext)
+	if (read && m_inConstructionContext)
 		m_errorReporter.typeError(
 			7733_error,
 			_expression.location(),

@@ -325,6 +325,7 @@ assemblyIdentifier
   : AssemblyIdentifierPart ( '.' AssemblyIdentifierPart )* ;
 
 // This includes all the Solidity keywords which are accepted by Yul
+fragment
 AssemblyIdentifierPart
   : ('abstract' | 'anonymous' | 'return' |  Identifier) ;
 

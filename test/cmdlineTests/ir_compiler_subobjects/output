@@ -9,7 +9,7 @@ Optimized IR:
 object "C_2" {
     code {
         {
-            mstore(0x40, freememorystart(128))
+            mstore(0x40, freememorystart(0x80))
             if callvalue() { revert(0, 0) }
             let _1 := datasize("C_2_deployed")
             codecopy(0, dataoffset("C_2_deployed"), _1)
@@ -19,7 +19,7 @@ object "C_2" {
     object "C_2_deployed" {
         code {
             {
-                mstore(0x40, freememorystart(128))
+                mstore(0x40, freememorystart(0x80))
                 revert(0, 0)
             }
         }
@@ -37,7 +37,7 @@ Optimized IR:
 object "D_13" {
     code {
         {
-            mstore(0x40, freememorystart(128))
+            mstore(0x40, freememorystart(0x80))
             if callvalue() { revert(0, 0) }
             let _1 := datasize("D_13_deployed")
             codecopy(0, dataoffset("D_13_deployed"), _1)
@@ -47,7 +47,7 @@ object "D_13" {
     object "D_13_deployed" {
         code {
             {
-                let _1 := freememorystart(128)
+                let _1 := freememorystart(0x80)
                 mstore(0x40, _1)
                 if iszero(lt(calldatasize(), 4))
                 {
@@ -77,7 +77,7 @@ object "D_13" {
         object "C_2" {
             code {
                 {
-                    mstore(0x40, freememorystart(128))
+                    mstore(0x40, freememorystart(0x80))
                     if callvalue() { revert(0, 0) }
                     let _1 := datasize("C_2_deployed")
                     codecopy(0, dataoffset("C_2_deployed"), _1)
@@ -87,7 +87,7 @@ object "D_13" {
             object "C_2_deployed" {
                 code {
                     {
-                        mstore(0x40, freememorystart(128))
+                        mstore(0x40, freememorystart(0x80))
                         revert(0, 0)
                     }
                 }

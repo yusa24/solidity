@@ -59,6 +59,9 @@ StackToMemoryMover::StackToMemoryMover(
 		evmDialect && evmDialect->providesObjectAccess(),
 		"StackToMemoryMover can only be run on objects using the EVMDialect with object access."
 	);
+
+	if (m_memorySlots.count(YulString{}))
+		m_currentFunctionMemorySlots = &m_memorySlots.at(YulString{});
 }
 
 void StackToMemoryMover::operator()(FunctionDefinition& _functionDefinition)

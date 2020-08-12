@@ -830,6 +830,43 @@ BOOST_AUTO_TEST_CASE(yul_identifier_with_dots)
 	BOOST_CHECK_EQUAL(scanner.next(), Token::EOS);
 }
 
+BOOST_AUTO_TEST_CASE(yul_function)
+{
+	string sig = "function f(a, b) -> (x, y)";
+	Scanner scanner(CharStream(sig, ""));
+	BOOST_CHECK_EQUAL(scanner.currentToken(), Token::Function);
+	BOOST_CHECK_EQUAL(scanner.next(), Token::Identifier);
+	BOOST_CHECK_EQUAL(scanner.next(), Token::LParen);
+	BOOST_CHECK_EQUAL(scanner.next(), Token::Identifier);
+	BOOST_CHECK_EQUAL(scanner.next(), Token::Comma);
+	BOOST_CHECK_EQUAL(scanner.next(), Token::Identifier);
+	BOOST_CHECK_EQUAL(scanner.next(), Token::RParen);
+	BOOST_CHECK_EQUAL(scanner.next(), Token::Sub);
+	BOOST_CHECK_EQUAL(scanner.next(), Token::GreaterThan);
+	BOOST_CHECK_EQUAL(scanner.next(), Token::LParen);
+	BOOST_CHECK_EQUAL(scanner.next(), Token::Identifier);
+	BOOST_CHECK_EQUAL(scanner.next(), Token::Comma);
+	BOOST_CHECK_EQUAL(scanner.next(), Token::Identifier);
+	BOOST_CHECK_EQUAL(scanner.next(), Token::RParen);
+	BOOST_CHECK_EQUAL(scanner.next(), Token::EOS);
+	scanner.reset(CharStream(sig, ""));
+	scanner.setScannerMode(ScannerKind::Yul);
+	BOOST_CHECK_EQUAL(scanner.currentToken(), Token::Function);
+	BOOST_CHECK_EQUAL(scanner.next(), Token::Identifier);
+	BOOST_CHECK_EQUAL(scanner.next(), Token::LParen);
+	BOOST_CHECK_EQUAL(scanner.next(), Token::Identifier);
+	BOOST_CHECK_EQUAL(scanner.next(), Token::Comma);
+	BOOST_CHECK_EQUAL(scanner.next(), Token::Identifier);
+	BOOST_CHECK_EQUAL(scanner.next(), Token::RParen);
+	BOOST_CHECK_EQUAL(scanner.next(), Token::RightArrow);
+	BOOST_CHECK_EQUAL(scanner.next(), Token::LParen);
+	BOOST_CHECK_EQUAL(scanner.next(), Token::Identifier);
+	BOOST_CHECK_EQUAL(scanner.next(), Token::Comma);
+	BOOST_CHECK_EQUAL(scanner.next(), Token::Identifier);
+	BOOST_CHECK_EQUAL(scanner.next(), Token::RParen);
+	BOOST_CHECK_EQUAL(scanner.next(), Token::EOS);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 } // end namespaces

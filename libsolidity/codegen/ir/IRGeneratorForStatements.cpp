@@ -1731,6 +1731,7 @@ void IRGeneratorForStatements::endVisit(MemberAccess const& _memberAccess)
 
 bool IRGeneratorForStatements::visit(InlineAssembly const& _inlineAsm)
 {
+	m_context.setInlineAssemblySeen();
 	CopyTranslate bodyCopier{_inlineAsm.dialect(), m_context, _inlineAsm.annotation().externalReferences};
 
 	yul::Statement modified = bodyCopier(_inlineAsm.operations());

@@ -46,12 +46,16 @@ struct Object;
  *
  * Finally, the StackToMemoryMover is called to actually move the variables to their offsets in memory.
  *
- * Prerequisite: Disambiguator, TODO: anything else?
+ * Prerequisite: Disambiguator
  */
 class StackLimitEvader
 {
 public:
 	/// @a _unreachableVariables can be determined by the CompilabilityChecker.
+	/// Can only be run on the EVM dialect with objects.
+	/// Abort and do nothing, if no ``memoryguard`` call or several ``memoryguard`` call
+	/// with non-matching arguments are found, or if any of the @a _unreachableVariables
+	/// are contained in a recursive function.
 	static void run(
 		OptimiserStepContext& _context,
 		Object& _object,

@@ -657,11 +657,14 @@ string IRGenerator::memoryInit(bool _useMemoryGuard)
 	// This function should be called at the beginning of the EVM call frame
 	// and thus can assume all memory to be zero, including the contents of
 	// the "zero memory area" (the position CompilerUtils::zeroPointer points to).
-	return Whiskers{
+	return
+		Whiskers{
 			_useMemoryGuard ?
-			"mstore(0x40, memoryguard(<freeMemoryStart>))" :
-			"mstore(0x40, <freeMemoryStart>)"
-		}(
+			"mstore(<memPtr>, memoryguard(<freeMemoryStart>))" :
+			"mstore(<memPtr>, <freeMemoryStart>)"
+		}
+		("memPtr", to_string(CompilerUtils::freeMemoryPointer))
+		(
 			"freeMemoryStart",
 			to_string(CompilerUtils::generalPurposeMemoryStart + m_context.reservedMemory())
 		).render();

@@ -22,15 +22,12 @@
 #include <libyul/optimiser/StackToMemoryMover.h>
 #include <libyul/backends/evm/EVMDialect.h>
 #include <libyul/AsmData.h>
-#include <libyul/CompilabilityChecker.h>
 #include <libyul/Dialect.h>
 #include <libyul/Exceptions.h>
 #include <libyul/Object.h>
 #include <libyul/Utilities.h>
 #include <libsolutil/Algorithms.h>
 #include <libsolutil/CommonData.h>
-#include <libsolutil/Visitor.h>
-#include <libevmasm/Exceptions.h>
 
 using namespace std;
 using namespace solidity;
@@ -108,16 +105,17 @@ void StackLimitEvader::run(
 		"StackToMemoryMover can only be run on objects using the EVMDialect with object access."
 	);
 
-	vector<FunctionCall*> getFreeMemoryStartCalls = FunctionCallFinder::run(
+	vector<FunctionCall*> memoryGuardCalls = FunctionCallFinder::run(
 		*_object.code,
 		"memoryguard"_yulstring
 	);
-	if (getFreeMemoryStartCalls.empty())
+	// Do not optimise, if no ``memoryguard`` call is found.
+	if (memoryGuardCalls.empty())
 		return;
 
-	// Make sure all calls to ``memoryguard`` we found have the same value as argument.
-	u256 reservedMemory = getLiteralArgumentValue(*getFreeMemoryStartCalls.front());
-	for (FunctionCall const* getFreeMemoryStartCall: getFreeMemoryStartCalls)
+	// Make sure all calls to ``memoryguard`` we found have the same value as argument (otherwise, abort).
+	u256 reservedMemory = getLiteralArgumentValue(*memoryGuardCalls.front());
+	for (FunctionCall const* getFreeMemoryStartCall: memoryGuardCalls)
 			if (reservedMemory != getLiteralArgumentValue(*getFreeMemoryStartCall))
 				return;
 
@@ -133,10 +131,10 @@ void StackLimitEvader::run(
 
 	StackToMemoryMover{_context, reservedMemory, memoryOffsetAllocator.slotAllocations}(*_object.code);
 	reservedMemory += 32 * requiredSlots;
-	for (FunctionCall* getFreeMemoryStartCall: getFreeMemoryStartCalls)
+	for (FunctionCall* memoryGuardCall: memoryGuardCalls)
 	{
-		Literal* literal = std::get_if<Literal>(&getFreeMemoryStartCall->arguments.front());
+		Literal* literal = std::get_if<Literal>(&memoryGuardCall->arguments.front());
+		yulAssert(literal, "");
 		literal->value = YulString{util::toCompactHexWithPrefix(reservedMemory)};
 	}
-
 }

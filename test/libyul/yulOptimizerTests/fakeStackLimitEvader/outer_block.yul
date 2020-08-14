@@ -1,5 +1,5 @@
 {
-	mstore(0x40, memoryguard(0x80))
+    mstore(0x40, memoryguard(0x80))
     let $x := 42
     sstore(42, $x)
 }

@@ -9,7 +9,7 @@ Optimized IR:
 object "D_11" {
     code {
         {
-            mstore(0x40, 128)
+            mstore(64, 128)
             if callvalue() { revert(0, 0) }
             let _1 := datasize("D_11_deployed")
             codecopy(0, dataoffset("D_11_deployed"), _1)
@@ -20,7 +20,7 @@ object "D_11" {
         code {
             {
                 let _1 := memoryguard(0x80)
-                mstore(0x40, _1)
+                mstore(64, _1)
                 if iszero(lt(calldatasize(), 4))
                 {
                     let _2 := 0
@@ -29,7 +29,7 @@ object "D_11" {
                         if callvalue() { revert(_2, _2) }
                         if slt(add(calldatasize(), not(3)), _2) { revert(_2, _2) }
                         if gt(_1, 0xffffffffffffffff) { revert(_2, _2) }
-                        mstore(0x40, _1)
+                        mstore(64, _1)
                         return(_1, _2)
                     }
                 }

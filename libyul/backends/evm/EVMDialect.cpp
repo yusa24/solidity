@@ -144,7 +144,7 @@ map<YulString, BuiltinFunctionForEVM> createBuiltins(langutil::EVMVersion _evmVe
 		}));
 
 		builtins.emplace(createFunction(
-			"freememorystart",
+			"memoryguard",
 			1,
 			1,
 			SideEffects{true, true, true, false, false},

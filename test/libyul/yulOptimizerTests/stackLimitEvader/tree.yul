@@ -1,6 +1,6 @@
 {
     {
-        mstore(0x40, freememorystart(128))
+        mstore(0x40, memoryguard(128))
         sstore(23, f())
     }
     function f() -> v{
@@ -169,7 +169,7 @@
 //
 // {
 //     {
-//         mstore(0x40, freememorystart(0x0100))
+//         mstore(0x40, memoryguard(0x0100))
 //         sstore(23, f())
 //     }
 //     function f() -> v

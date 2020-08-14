@@ -110,12 +110,12 @@ void StackLimitEvader::run(
 
 	vector<FunctionCall*> getFreeMemoryStartCalls = FunctionCallFinder::run(
 		*_object.code,
-		"freememorystart"_yulstring
+		"memoryguard"_yulstring
 	);
 	if (getFreeMemoryStartCalls.empty())
 		return;
 
-	// Make sure all calls to ``freememorystart`` we found have the same value as argument.
+	// Make sure all calls to ``memoryguard`` we found have the same value as argument.
 	u256 reservedMemory = getLiteralArgumentValue(*getFreeMemoryStartCalls.front());
 	for (FunctionCall const* getFreeMemoryStartCall: getFreeMemoryStartCalls)
 			if (reservedMemory != getLiteralArgumentValue(*getFreeMemoryStartCall))

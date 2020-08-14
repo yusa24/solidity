@@ -1,5 +1,5 @@
 {
-    mstore(0x40, freememorystart(128))
+    mstore(0x40, memoryguard(128))
     sstore(0, g(sload(3)))
     function g(x) -> v {
         v := f()
@@ -48,7 +48,7 @@
 // step: stackLimitEvader
 //
 // {
-//     mstore(0x40, freememorystart(128))
+//     mstore(0x40, memoryguard(128))
 //     sstore(0, g(sload(3)))
 //     function g(x) -> v
 //     { v := f() }

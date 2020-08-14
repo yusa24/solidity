@@ -659,7 +659,7 @@ string IRGenerator::memoryInit(bool _useMemoryGuard)
 	// the "zero memory area" (the position CompilerUtils::zeroPointer points to).
 	return Whiskers{
 			_useMemoryGuard ?
-			"mstore(0x40, freememorystart(<freeMemoryStart>))" :
+			"mstore(0x40, memoryguard(<freeMemoryStart>))" :
 			"mstore(0x40, <freeMemoryStart>)"
 		}(
 			"freeMemoryStart",

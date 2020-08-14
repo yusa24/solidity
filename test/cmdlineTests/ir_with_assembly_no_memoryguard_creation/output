@@ -19,7 +19,7 @@ object "D_11" {
     object "D_11_deployed" {
         code {
             {
-                let _1 := freememorystart(0x80)
+                let _1 := memoryguard(0x80)
                 mstore(0x40, _1)
                 if iszero(lt(calldatasize(), 4))
                 {

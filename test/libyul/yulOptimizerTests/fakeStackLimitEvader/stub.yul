@@ -1,5 +1,5 @@
 {
-	mstore(0x40, freememorystart(0))
+	mstore(0x40, memoryguard(0))
 	function f() {
 	    let $fx
 	    let $fy := 42
@@ -27,7 +27,7 @@
 // step: fakeStackLimitEvader
 //
 // {
-//     mstore(0x40, freememorystart(0x80))
+//     mstore(0x40, memoryguard(0x80))
 //     function f()
 //     {
 //         mstore(0x20, 0)
